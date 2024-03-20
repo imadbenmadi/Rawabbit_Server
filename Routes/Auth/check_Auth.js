@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
-const axios = require("axios");
 require("dotenv").config();
 const { Users, Refresh_tokens } = require("../../models/Database");
 
