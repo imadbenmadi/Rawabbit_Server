@@ -6,36 +6,25 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const path = require("path");
-const allowedOrigins = [
-    "https://backend.skate-consult.com",
-    "https://skate-consult.com",
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "http://localhost:3500",
-];
+
 const corsOptions = {
-    origin: (origin, callback) => {
-        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-            callback(null, true);
-        } else {
-            callback(new Error(`Not allowed by CORS , origin : ${origin}`));
-        }
-    },
+    origin: "*", // Allow access from all origins
     optionsSuccessStatus: 200,
 };
+
 const credentials = (req, res, next) => {
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-        res.header("Access-Control-Allow-Credentials", true);
-    }
+    res.header("Access-Control-Allow-Credentials", true);
     next();
 };
+
 require("dotenv").config();
+
 const limiter = rateLimit({
     windowMs: 60 * 1000, // 15 minutes
     max: 200, // limit each IP to 100 requests per windowMs
-    message: "Too many requests ,try again later.",
+    message: "Too many requests, try again later.",
 });
+
 app.use(limiter);
 app.use(cookieParser());
 app.use(credentials);
@@ -47,18 +36,16 @@ app.use("/", express.static(path.join(__dirname, "/Public")));
 
 mongoose.set("strictQuery", false);
 const mongoDB = process.env.MONGO_URI;
+
 async function connect_to_db() {
-    await mongoose.connect(mongoDB, {
-        // useNewUrlParser: true,
-        // useUnifiedTopology: true,
-    });
+    await mongoose.connect(mongoDB);
     console.log("Connected to Database");
 }
 
 connect_to_db().catch((err) => console.log(err));
 
-app.get("/", (req,res) => {
-    res.send("Hello From Rawabbit ");
+app.get("/", (req, res) => {
+    res.send("Hello From Rawabbit");
 });
 app.use("/check_Auth", require("./Routes/Auth/check_Auth"));
 app.use("/VerifyAccount", require("./Routes/Auth/verifyAccount"));
