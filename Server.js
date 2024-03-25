@@ -6,17 +6,28 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const path = require("path");
-
+const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:3500",
+];
 const corsOptions = {
-    origin: "*", // Allow access from all origins
+    origin: (origin, callback) => {
+        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error(`Not allowed by CORS , origin : ${origin}`));
+        }
+    },
     optionsSuccessStatus: 200,
 };
-
 const credentials = (req, res, next) => {
-    res.header("Access-Control-Allow-Credentials", true);
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+        res.header("Access-Control-Allow-Credentials", true);
+    }
     next();
 };
-
 require("dotenv").config();
 
 const limiter = rateLimit({

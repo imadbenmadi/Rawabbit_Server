@@ -9,11 +9,11 @@ const hashPassword = async (password) => {
 // Function to add an admin to the database
 const addAdmin = async (req, res) => {
     try {
-        const { adminUser, adminPwd } = req.body;
-        const hashedPassword = await hashPassword(adminPwd);
+        const { Name, Password } = req.body;
+        const hashedPassword = await hashPassword(Password);
 
         await Admin_data.create({
-            Admin_User_Name: adminUser,
+            Admin_User_Name: Name,
             Admin_Pwd: hashedPassword,
         });
         return res
