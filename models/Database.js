@@ -42,6 +42,7 @@ const Users = mongoose.model(
                 Readed: { type: Boolean, default: false },
             },
         ],
+        Date: { type: Date, default: Date.now },
     })
 );
 
@@ -78,6 +79,7 @@ const Messages = mongoose.model(
         Date: { type: Date },
         Sender_id: { type: mongoose.Types.ObjectId, ref: "Users" },
         Sender_email: { type: String },
+        Readed: { type: Boolean, default: false },
     })
 );
 const requests = mongoose.model(
@@ -86,6 +88,8 @@ const requests = mongoose.model(
         User: { type: mongoose.Types.ObjectId, ref: "Users" },
         Website: { type: String },
         Date: { type: Date, default: Date.now },
+        Status: { type: String },
+        Message: { type: String },
     })
 );
 // Services Courses Blogs Events
