@@ -65,15 +65,18 @@ const handle_add_User = async (req, res) => {
             return res.status(409).json({
                 message: "Invalid Gender, accepted values: male or female",
             });
-        } else if (Telephone.length < 9) {
+        }
+        else if (Telephone.length < 9) {
             return res
                 .status(409)
                 .json({ message: "Telephone must be at least 9 characters" });
-        } else if (!isValidTelephone) {
-            return res
-                .status(409)
-                .json({ message: "Telephone must be a number" });
-        } else if (Age && isNaN(Age)) {
+        }
+        // else if (!isValidTelephone) {
+        //     return res
+        //         .status(409)
+        //         .json({ message: "Telephone must be a number" });
+        // }
+        else if (Age && isNaN(Age)) {
             return res.status(409).json({ message: "Age must be a number" });
         }
         const existingUser = await Users.findOne({ Email: Email });
@@ -302,8 +305,6 @@ const get_user = async (req, res) => {
             return res.status(409).json({ message: "User ID is required." });
         }
         const user = await Users.findById(id)
-            .populate("Services")
-            .populate("Courses");
         if (!user) {
             return res.status(404).json({ message: "User not found." });
         }

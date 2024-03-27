@@ -139,11 +139,13 @@ const handleRegister = async (req, res) => {
             return res
                 .status(409)
                 .json({ message: "Telephone must be at least 9 characters" });
-        } else if (!isValidTelephone) {
-            return res
-                .status(409)
-                .json({ message: "Telephone must be a number" });
-        } else if (Age && isNaN(Age)) {
+        }
+        // else if (!isValidTelephone) {
+        //     return res
+        //         .status(409)
+        //         .json({ message: "Telephone must be a number" });
+        // }
+        else if (Age && isNaN(Age)) {
             return res.status(409).json({ message: "Age must be a number" });
         }
 

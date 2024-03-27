@@ -11,14 +11,6 @@ const Users = mongoose.model(
         Age: { type: Number },
         Gender: { type: String, enum: ["male", "female"] },
         ProfilePic: { type: String },
-        Courses: [{ type: mongoose.Types.ObjectId, ref: "Courses" }],
-        Services: [
-            {
-                type: mongoose.Types.ObjectId,
-                ref: "Services",
-                service_state: { type: String },
-            },
-        ],
         IsEmailVerified: { type: Boolean, default: false },
         Notifications: [
             {
