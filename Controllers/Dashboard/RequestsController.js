@@ -14,13 +14,11 @@ const handle_get_Requests = async (req, res) => {
         });
     }
     try {
-        const requests = await requests
-            .find()
-            .populate({
-                path: "User",
-                select: "FirstName LastName Email Telephone IsEmailVerified ", // Specify the fields you want to include
-            })
-            // .populate("Website");
+        const requests = await requests.find().populate({
+            path: "User",
+            select: "FirstName LastName Email Telephone IsEmailVerified ", // Specify the fields you want to include
+        });
+        // .populate("Website");
         return res.status(200).json({ requests });
     } catch (error) {
         return res.status(500).json({ message: error });
@@ -111,8 +109,36 @@ const handle_Reject_request = async (req, res) => {
         return res.status(500).json({ message: error });
     }
 };
+const handle_get_user_Requests = async (req, res) => {
+    const isAuth = await Verify_Admin(req, res);
+    if (isAuth.status == false)
+        return res.status(401).json({
+            message: "Unauthorized: Invalid",
+        });
+
+    if (isAuth.status == true && isAuth.Refresh == true) {
+        res.cookie("admin_accessToken", isAuth.newAccessToken, {
+            httpOnly: true,
+            sameSite: "None",
+            secure: true,
+            maxAge: 60 * 60 * 1000, // 10 minutes in milliseconds
+        });
+    }
+    try {
+        const { userId } = req.params;
+        if (!userId) {
+            return res.status(409).json({ message: "userId is required." });
+        }
+        const Requests = await requests.find({ User: userId });
+        return res.status(200).json({ Requests });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: error });
+    }
+};
 module.exports = {
     handle_Accept_request,
     handle_Reject_request,
     handle_get_Requests,
+    handle_get_user_Requests,
 };

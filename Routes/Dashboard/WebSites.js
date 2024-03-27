@@ -8,7 +8,10 @@ const fs = require("fs");
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            const destinationPath = path.join(__dirname, "../../Public/WebSites");
+            const destinationPath = path.join(
+                __dirname,
+                "../../Public/WebSites"
+            );
             // Create the destination directory if it doesn't exist
             if (!fs.existsSync(destinationPath)) {
                 fs.mkdirSync(destinationPath, { recursive: true });
@@ -31,10 +34,13 @@ router.post(
     (req, res, next) => {
         req.body.generatedFilename = req.generatedFilename;
         next();
-    },
-    WebSitesController.handle_add_WebSites
+    }
+    // WebSitesController.handle_add_WebSites
 );
-router.delete("/:id", WebSitesController.handle_delete_WebSites);
+router.delete(
+    "/:id"
+    // WebSitesController.handle_delete_WebSites
+);
 router.put(
     "/:id",
     upload.single("image"),
@@ -42,16 +48,7 @@ router.put(
         req.body.generatedFilename = req.generatedFilename;
         next();
     },
-    WebSitesController.handle_update_WebSites
-);
-router.get("/Requests", WebSitesController.handle_get_WebSites_Request);
-router.post(
-    "/Requests/Accept",
-    WebSitesController.handle_Accept_WebSite_request
-);
-router.post(
-    "/Requests/Reject",
-    WebSitesController.handle_Reject_WebSite_request
+    // WebSitesController.handle_update_WebSites
 );
 
 module.exports = router;
