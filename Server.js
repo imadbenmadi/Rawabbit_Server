@@ -86,8 +86,8 @@ app.use("/Dashboard/Users", require("./Routes/Dashboard/Users"));
 // app.use("/Dashboard/AddAdmin", require("./Routes/Dashboard/Add_Admin"));
 
 // app.use("/Dashboard", require("./Routes/Dashboard/Dashboard"));
-// app.use(verifyJWT);
-
+app.use("/Dashboard/WebSites", require("./Routes/Dashboard/WebSites"));
+app.use("/Dashboard/Requests", require("./Routes/Dashboard/Requests"));
 app.listen(3000);
 
 module.exports = app;
