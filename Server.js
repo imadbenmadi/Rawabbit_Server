@@ -88,6 +88,8 @@ app.use("/Dashboard/Users", require("./Routes/Dashboard/Users"));
 // app.use("/Dashboard", require("./Routes/Dashboard/Dashboard"));
 app.use("/Dashboard/Websites", require("./Routes/Dashboard/Websites"));
 app.use("/Dashboard/Requests", require("./Routes/Dashboard/Requests"));
+
+app.use("/Websites", require("./Routes/Websites"));
 app.listen(3000);
 
 module.exports = app;
