@@ -45,29 +45,44 @@ const handle_Accept_request = async (req, res) => {
                 .status(409)
                 .json({ message: "All fields are required." });
         }
-
-        // Remove the request from the database
-        await requests.deleteMany({ User: UserId, Request: RequestId });
-
-        const Notificatio_ToSend = {
+        const request_in_db = await requests.findOne({
+            User: UserId,
+            Request: RequestId,
+        });
+        if (!request_in_db) {
+            return res.status(409).json({ message: "Request not found." });
+        }
+        const newWebsite = new Websites({
+            User: UserId,
+            Link: request_in_db.Link,
+            Title: request_in_db.Title,
+            Text: request_in_db.Text,
+            Description: request_in_db.Description,
+            Category: request_in_db.Category,
+            Message: request_in_db.Message,
+        });
+        await newWebsite.save();
+        const Notification_ToSend = {
             Type: "Request",
-            Title: "Request request accepted",
-            Text: "Your request for the Request has been accepted",
+            Title: "Request accepted",
+            Text: "Your request has been accepted",
             Date: new Date(),
         };
-        // Add the Request to the user's list of Requests , adn Notify him
         await Users.findByIdAndUpdate(UserId, {
             $push: {
-                Websites: RequestId,
-                Notifications: Notificatio_ToSend,
+                Websites: newWebsite._id, 
+                Notifications: Notification_ToSend,
             },
         }).exec();
+        await requests.deleteMany({ User: UserId, Request: RequestId });
 
-        return res.status(200).json({ message: "Request request accepted." });
+        return res.status(200).json({ message: "Request accepted." });
     } catch (error) {
-        return res.status(500).json({ message: error });
+        return res.status(500).json({ message: error.message });
     }
 };
+
+module.exports = handle_Accept_request;
 const handle_Reject_request = async (req, res) => {
     const isAuth = await Verify_Admin(req, res);
 

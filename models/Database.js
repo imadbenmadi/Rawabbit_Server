@@ -67,16 +67,6 @@ const requests = mongoose.model(
     "requests",
     new mongoose.Schema({
         User: { type: mongoose.Types.ObjectId, ref: "Users" },
-        Website: { type: String },
-        Date: { type: Date, default: Date.now },
-        Status: { type: String },
-        Message: { type: String },
-    })
-);
-// Services Courses Blogs Events
-const Websites = mongoose.model(
-    "Websites",
-    new mongoose.Schema({
         Link: { type: String },
         Title: { type: String },
         Text: { type: String },
@@ -84,7 +74,21 @@ const Websites = mongoose.model(
         Image: { type: String },
         Category: { type: String },
         Date: { type: Date, default: Date.now },
+        Message: { type: String },
+    })
+);
+// Services Courses Blogs Events
+const Websites = mongoose.model(
+    "Websites",
+    new mongoose.Schema({
         User: { type: mongoose.Types.ObjectId, ref: "Users" },
+        Link: { type: String },
+        Title: { type: String },
+        Text: { type: String },
+        Description: { type: String },
+        Image: { type: String },
+        Category: { type: String },
+        Date: { type: Date, default: Date.now },
         Comments: [
             {
                 User: { type: mongoose.Types.ObjectId, ref: "Users" },
