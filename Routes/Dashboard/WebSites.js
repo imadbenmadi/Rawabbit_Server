@@ -38,8 +38,8 @@ router.post(
     WebsitesController.handle_add_Websites
 );
 router.delete(
-    "/:id"
-    // WebsitesController.handle_delete_Websites
+    "/:id",
+    WebsitesController.handle_delete_Websites
 );
 router.put(
     "/:id",
@@ -47,8 +47,8 @@ router.put(
     (req, res, next) => {
         req.body.generatedFilename = req.generatedFilename;
         next();
-    }
-    // WebsitesController.handle_update_Websites
+    },
+    WebsitesController.handle_update_Websites
 );
 
 module.exports = router;

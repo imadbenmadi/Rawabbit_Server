@@ -1,7 +1,8 @@
-const { Websites, Users } = require("../../models/Database");
+const { Websites, Users, requests } = require("../../models/Database");
 const path = require("path");
 const fs = require("fs");
 const Verify_Admin = require("../../Middleware/Verify_Admin");
+const { log } = require("console");
 const Delete_image = (generatedFilename) => {
     const imagePath = path.join(
         __dirname,
@@ -109,12 +110,13 @@ const handle_delete_Websites = async (req, res) => {
         await Websites.findByIdAndDelete(id);
 
         // Delete any related requests for this Website
-        await request_Website.deleteMany({ Website: id });
+        await requests.deleteMany({ Website: id });
 
         return res
             .status(200)
             .json({ message: "Website deleted successfully." });
     } catch (error) {
+        console.log(error);
         return res.status(500).json({ message: error });
     }
 };
@@ -136,7 +138,7 @@ const handle_update_Websites = async (req, res) => {
         });
     }
     try {
-        const { Title, Text, Description, Price, Category, date } = req.body;
+        const { Link,Title, Text, Description,  Category, date } = req.body;
         const { id } = req.params;
         if (!id) {
             if (req.body.generatedFilename) {
@@ -174,8 +176,8 @@ const handle_update_Websites = async (req, res) => {
         if (Description) {
             Website.Description = Description;
         }
-        if (Price) {
-            Website.Price = Price;
+        if (Link) {
+            Website.Link = Link;
         }
         if (Category) {
             Website.Category = Category;
