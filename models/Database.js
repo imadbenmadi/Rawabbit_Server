@@ -96,6 +96,13 @@ const Websites = mongoose.model(
                 Date: { type: Date, default: Date.now },
             },
         ],
+        Ratings: [
+            {
+                User: { type: mongoose.Types.ObjectId, ref: "Users" },
+                Rating: { type: Number },
+                Date: { type: Date, default: Date.now },
+            },
+        ],
         Likes: [{ type: mongoose.Types.ObjectId, ref: "Users" }],
         Dislikes: [{ type: mongoose.Types.ObjectId, ref: "Users" }],
         Visits: { type: Number, default: 0 },
