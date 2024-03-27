@@ -10,7 +10,7 @@ const upload = multer({
         destination: function (req, file, cb) {
             const destinationPath = path.join(
                 __dirname,
-                "../../Public/Websites"
+                "../../Public/Websites_Images"
             );
             // Create the destination directory if it doesn't exist
             if (!fs.existsSync(destinationPath)) {

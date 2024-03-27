@@ -28,24 +28,24 @@ const getWebsite = async (req, res) => {
 
     try {
         const Website = await Websites.findById(WebsiteId)
-            .populate({
-                path: "User",
-                select: "-Notifications -Requests -Telephone -Password -Age -IsEmailVerified", // Exclude notifications and requests
-            })
-            .populate({
-                path: "Comments",
-                populate: {
-                    path: "User",
-                    select: "-Notifications -Requests -Telephone -Password -Age -IsEmailVerified ", // Exclude notifications and requests
-                },
-            })
-            .populate({
-                path: "Ratings",
-                populate: {
-                    path: "User",
-                    select: "-Notifications -Requests -Telephone -Password -Age -IsEmailVerified", // Exclude notifications and requests
-                },
-            });
+            // .populate({
+            //     path: "User",
+            //     select: "-Notifications -Requests -Telephone -Password -Age -IsEmailVerified", // Exclude notifications and requests
+            // })
+            // .populate({
+            //     path: "Comments",
+            //     populate: {
+            //         path: "User",
+            //         select: "-Notifications -Requests -Telephone -Password -Age -IsEmailVerified ", // Exclude notifications and requests
+            //     },
+            // })
+            // .populate({
+            //     path: "Ratings",
+            //     populate: {
+            //         path: "User",
+            //         select: "-Notifications -Requests -Telephone -Password -Age -IsEmailVerified", // Exclude notifications and requests
+            //     },
+            // });
 
         if (!Website) {
             return res.status(404).json({ error: "Website not found." });

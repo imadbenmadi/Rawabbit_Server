@@ -5,7 +5,7 @@ const Verify_Admin = require("../../Middleware/Verify_Admin");
 const Delete_image = (generatedFilename) => {
     const imagePath = path.join(
         __dirname,
-        "../../Public/Websites",
+        "../../Public/Websites_Images",
         generatedFilename
     );
     try {
@@ -33,23 +33,22 @@ const handle_add_Websites = async (req, res) => {
         });
     }
     try {
-        const { Title, Text, Description,  Category } = req.body;
-        if (!Title || !Text || !Description  || !Category) {
+        const { Title, Text, Description, Category, Link } = req.body;
+        if (!Title || !Text || !Description || !Category || !Link) {
             if (req.body.generatedFilename) {
                 Delete_image(req.body.generatedFilename);
             }
             return res
                 .status(409)
                 .json({ message: "All fields are required." });
-        } 
-        const creationDate = new Date();
+        }
         const generatedFilename = req.body.generatedFilename;
         const newWebsite = new Websites({
+            Link,
             Title,
             Text,
             Description,
             Category,
-            Date: creationDate,
             Image: generatedFilename,
         });
         // Save the Website to the database
@@ -94,7 +93,7 @@ const handle_delete_Websites = async (req, res) => {
         if (Website.Image) {
             const imagePath = path.join(
                 __dirname,
-                "../../Public/Websites",
+                "../../Public/Websites_Images",
                 Website.Image
             );
             fs.unlink(imagePath, (err) => {
@@ -156,7 +155,7 @@ const handle_update_Websites = async (req, res) => {
             if (Website.Image) {
                 const imagePath = path.join(
                     __dirname,
-                    "../../Public/Websites",
+                    "../../Public/Websites_Images",
                     Website.Image
                 );
                 fs.unlinkSync(imagePath);

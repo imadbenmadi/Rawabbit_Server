@@ -89,13 +89,13 @@ const Websites = mongoose.model(
         Image: { type: String },
         Category: { type: String },
         Date: { type: Date, default: Date.now },
-        Comments: [
-            {
-                User: { type: mongoose.Types.ObjectId, ref: "Users" },
-                Text: { type: String },
-                Date: { type: Date, default: Date.now },
-            },
-        ],
+        // Comments: [
+        //     {
+        //         User: { type: mongoose.Types.ObjectId, ref: "Users" },
+        //         Text: { type: String },
+        //         Date: { type: Date, default: Date.now },
+        //     },
+        // ],
         // Ratings: [
         //     {
         //         User: { type: mongoose.Types.ObjectId, ref: "Users" },
