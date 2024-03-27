@@ -70,7 +70,7 @@ const handle_Accept_request = async (req, res) => {
         };
         await Users.findByIdAndUpdate(UserId, {
             $push: {
-                Websites: newWebsite._id, 
+                Websites: newWebsite._id,
                 Notifications: Notification_ToSend,
             },
         }).exec();
@@ -82,13 +82,12 @@ const handle_Accept_request = async (req, res) => {
     }
 };
 
-module.exports = handle_Accept_request;
 const handle_Reject_request = async (req, res) => {
     const isAuth = await Verify_Admin(req, res);
 
-    if (isAuth.status == false)
+    if (!isAuth.status)
         return res.status(401).json({ message: "Unauthorized: Invalid token" });
-    if (isAuth.status == true && isAuth.Refresh == true) {
+    if (isAuth.Refresh) {
         res.cookie("admin_accessToken", isAuth.newAccessToken, {
             httpOnly: true,
             sameSite: "None",
@@ -106,24 +105,36 @@ const handle_Reject_request = async (req, res) => {
         }
 
         // Remove the request from the database
-        await requests.deleteMany({ User: UserId, Request: RequestId });
-        const Notificatio_ToSend = {
+        const deletedRequest = await requests.deleteMany({
+            User: UserId,
+            Request: RequestId,
+        });
+        if (!deletedRequest.deletedCount) {
+            return res.status(404).json({ message: "Request not found." });
+        }
+
+        const notificationToSend = {
             Type: "Request",
-            Title: "Request request Rejected",
-            Text: "Your request for the Request has been Rejected",
+            Title: "Request Rejected",
+            Text: "Your request has been rejected",
             Date: new Date(),
         };
 
+        // Add rejection notification to user
         await Users.findByIdAndUpdate(UserId, {
             $push: {
-                Notifications: Notificatio_ToSend,
+                Notifications: notificationToSend,
             },
         }).exec();
-        return res.status(200).json({ message: "Request request rejected." });
+
+        return res.status(200).json({ message: "Request rejected." });
     } catch (error) {
-        return res.status(500).json({ message: error });
+        return res.status(500).json({ message: error.message });
     }
 };
+
+module.exports = handle_Reject_request;
+
 const handle_get_user_Requests = async (req, res) => {
     const isAuth = await Verify_Admin(req, res);
     if (isAuth.status == false)
