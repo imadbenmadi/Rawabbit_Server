@@ -1,10 +1,4 @@
-const {
-    Users,
-    request_Course,
-    request_Service,
-    Courses,
-    Services,
-} = require("../../models/Database");
+const { Users, requests, Websites } = require("../../models/Database");
 const ObjectId = require("mongoose").Types.ObjectId; // Import ObjectId from mongoose
 const { Types } = require("mongoose");
 const mongoose = require("mongoose");
@@ -124,6 +118,7 @@ const handle_delete_User = async (req, res) => {
             return res.status(404).json({ message: "User not found." });
         }
         await Users.findByIdAndDelete(id);
+        await requests.deleteMany({ User: id });
         return res.status(200).json({ message: "User Deleted Successfully." });
     } catch (error) {
         return res.status(500).json({ message: error });
@@ -143,14 +138,7 @@ const handle_modify_User = async (req, res) => {
         });
     }
     try {
-        const {
-            id,
-            CoursesToAdd,
-            CoursesToRemove,
-            ServicesToAdd,
-            ServicesToRemove,
-            NotificationsToAdd,
-        } = req.body;
+        const { id, WebsitesToAdd, WebsitesToRemove } = req.body;
         if (!id) {
             return res.status(409).json({ message: "Messing Data" });
         }
@@ -198,24 +186,24 @@ const handle_modify_User = async (req, res) => {
             userToUpdate.IsEmailVerified = IsEmailVerified;
         }
 
-        if (CoursesToAdd && CoursesToAdd.length > 0) {
-            const coursesToAddUnique = CoursesToAdd.filter(
-                (course) => !userToUpdate.Courses.includes(course)
+        if (WebsitesToAdd && WebsitesToAdd.length > 0) {
+            const WebsitesToAddUnique = WebsitesToAdd.filter(
+                (Website) => !userToUpdate.Websites.includes(Website)
             );
-            userToUpdate.Courses.push(...coursesToAddUnique);
+            userToUpdate.Websites.push(...WebsitesToAddUnique);
         }
 
-        if (CoursesToRemove && CoursesToRemove.length > 0) {
+        if (WebsitesToRemove && WebsitesToRemove.length > 0) {
             try {
-                for (const courseId of CoursesToRemove) {
-                    // Find the index of the courseId in userToUpdate.Courses
-                    const indexToRemove = userToUpdate.Courses.findIndex(
-                        (course) => String(course) === courseId
+                for (const WebsiteId of WebsitesToRemove) {
+                    // Find the index of the WebsiteId in userToUpdate.Websites
+                    const indexToRemove = userToUpdate.Websites.findIndex(
+                        (Website) => String(Website) === WebsiteId
                     );
 
-                    // Remove the courseId if found
+                    // Remove the WebsiteId if found
                     if (indexToRemove !== -1) {
-                        userToUpdate.Courses.splice(indexToRemove, 1);
+                        userToUpdate.Websites.splice(indexToRemove, 1);
                     } else {
                     }
                 }
@@ -223,38 +211,6 @@ const handle_modify_User = async (req, res) => {
                 return res.status(500).json({ message: error });
             }
         }
-
-        // Update Services
-        if (ServicesToAdd && ServicesToAdd.length > 0) {
-            const servicesToAddUnique = ServicesToAdd.filter(
-                (service) => !userToUpdate.Services.includes(service)
-            );
-            userToUpdate.Services.push(...servicesToAddUnique);
-        }
-        if (ServicesToRemove && ServicesToRemove.length > 0) {
-            try {
-                for (const serviceId of ServicesToRemove) {
-                    // Find the index of the serviceId in userToUpdate.Services
-                    const indexToRemove = userToUpdate.Services.findIndex(
-                        (service) => String(service) === serviceId
-                    );
-
-                    // Remove the serviceId if found
-                    if (indexToRemove !== -1) {
-                        userToUpdate.Services.splice(indexToRemove, 1);
-                    } else {
-                    }
-                }
-            } catch (error) {
-                return res.status(500).json({ message: error });
-            }
-        }
-
-        // Update Notifications
-        if (NotificationsToAdd && NotificationsToAdd.length > 0) {
-            userToUpdate.Notifications.push(...NotificationsToAdd);
-        }
-
         // Save the updated user
         await userToUpdate.save();
 
@@ -362,82 +318,12 @@ const handle_notify_User = async (req, res) => {
         return res.status(500).json({ message: error });
     }
 };
-const get_user_course_requests = async (req, res) => {
-    const isAuth = await Verify_Admin(req, res);
-
-    if (isAuth.status == false) {
-        return res.status(401).json({
-            message: "Unauthorized",
-        });
-    }
-    if (isAuth.status == true && isAuth.Refresh == true) {
-        res.cookie("admin_accessToken", isAuth.newAccessToken, {
-            httpOnly: true,
-            sameSite: "None",
-            secure: true,
-            maxAge: 60 * 60 * 1000,
-        });
-    }
-    try {
-        const id = req.params.id;
-        if (!id) {
-            return res.status(409).json({ message: "User ID is required." });
-        }
-        const user = await Users.findById(id);
-        if (!user) {
-            return res.status(404).json({ message: "User not found." });
-        }
-        const courseRequests = await request_Course
-            .find({ User: id })
-            .populate("User")
-            .populate("Course");
-        return res.status(200).json(courseRequests);
-    } catch (error) {
-        return res.status(500).json({ message: error });
-    }
-};
-const get_user_service_requests = async (req, res) => {
-    const isAuth = await Verify_Admin(req, res);
-
-    if (isAuth.status == false) {
-        return res.status(401).json({
-            message: "Unauthorized",
-        });
-    }
-    if (isAuth.status == true && isAuth.Refresh == true) {
-        res.cookie("admin_accessToken", isAuth.newAccessToken, {
-            httpOnly: true,
-            sameSite: "None",
-            secure: true,
-            maxAge: 60 * 60 * 1000,
-        });
-    }
-    try {
-        const id = req.params.id;
-        if (!id) {
-            return res.status(409).json({ message: "User ID is required." });
-        }
-        const user = await Users.findById(id);
-        if (!user) {
-            return res.status(404).json({ message: "User not found." });
-        }
-        const serviceRequests = await request_Service
-            .find({ User: id })
-            .populate("User")
-            .populate("Service");
-        return res.status(200).json(serviceRequests);
-    } catch (error) {
-        return res.status(500).json({ message: error });
-    }
-};
-const delete_user_course = async (req, res) => {
+const delete_user_Website = async (req, res) => {
     try {
         const isAuth = await Verify_Admin(req, res);
-
         if (!isAuth.status) {
             return res.status(401).json({ message: "Unauthorized" });
         }
-
         if (isAuth.Refresh) {
             res.cookie("admin_accessToken", isAuth.newAccessToken, {
                 httpOnly: true,
@@ -446,102 +332,32 @@ const delete_user_course = async (req, res) => {
                 maxAge: 60 * 60 * 1000,
             });
         }
-
-        const { id, course_id } = req.params;
-        // Validate input parameters
-        if (!id || !course_id) {
+        const { id, Website_id } = req.params;
+        if (!id || !Website_id) {
             return res
                 .status(400)
-                .json({ message: "User ID and Course ID are required." });
+                .json({ message: "User ID and Website ID are required." });
         }
-
-        // Find the user by ID
         const user = await Users.findById(id);
         if (!user) {
             return res.status(404).json({ message: "User not found." });
         }
-
-        // Find the course by ID
-        const course = await Courses.findById(course_id);
-        if (!course) {
-            return res.status(404).json({ message: "Course not found." });
-        }
-
-        // Check if the user owns the specified course
-        const indexToRemove = user.Courses.findIndex(
-            (course) => String(course) === course_id
-        );
+        const indexToRemove = user.Websites.indexOf(Website_id);
         if (indexToRemove === -1) {
             return res
                 .status(404)
-                .json({ message: "User does not own this course." });
+                .json({ message: "User does not own this Website." });
         }
-
-        // Remove the course from the user's list of courses
-        user.Courses.splice(indexToRemove, 1);
         await user.save();
-
+        user.Websites.splice(indexToRemove, 1);
+        const Website = await Websites.findById(Website_id);
+        if (!Website) {
+            return res.status(404).json({ message: "Website not found." });
+        }
+        await Website.deleteOne();
         return res
             .status(200)
-            .json({ message: "Course deleted successfully." });
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
-};
-const delete_user_service = async (req, res) => {
-    try {
-        const isAuth = await Verify_Admin(req, res);
-
-        if (!isAuth.status) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
-
-        if (isAuth.Refresh) {
-            res.cookie("admin_accessToken", isAuth.newAccessToken, {
-                httpOnly: true,
-                sameSite: "None",
-                secure: true,
-                maxAge: 60 * 60 * 1000,
-            });
-        }
-
-        const { id, service_id } = req.params;
-        // Validate input parameters
-        if (!id || !service_id) {
-            return res
-                .status(400)
-                .json({ message: "User ID and Service ID are required." });
-        }
-
-        // Find the user by ID
-        const user = await Users.findById(id);
-        if (!user) {
-            return res.status(404).json({ message: "User not found." });
-        }
-
-        // Find the service by ID
-        const service = await Services.findById(service_id);
-        if (!service) {
-            return res.status(404).json({ message: "Service not found." });
-        }
-
-        // Check if the user owns the specified service
-        const indexToRemove = user.Services.findIndex(
-            (service) => String(service) === service_id
-        );
-        if (indexToRemove === -1) {
-            return res
-                .status(404)
-                .json({ message: "User does not own this service." });
-        }
-
-        // Remove the service from the user's list of services
-        user.Services.splice(indexToRemove, 1);
-        await user.save();
-
-        return res
-            .status(200)
-            .json({ message: "Service deleted successfully." });
+            .json({ message: "Website deleted successfully." });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
@@ -553,8 +369,5 @@ module.exports = {
     getAllUsers,
     get_user,
     handle_notify_User,
-    get_user_course_requests,
-    get_user_service_requests,
-    delete_user_course,
-    delete_user_service,
+    delete_user_Website,
 };
