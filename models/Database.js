@@ -59,8 +59,7 @@ const Messages = mongoose.model(
         Title: { type: String },
         Message: { type: String },
         Date: { type: Date },
-        Sender_id: { type: mongoose.Types.ObjectId, ref: "Users" },
-        Sender_email: { type: String },
+        User: { type: mongoose.Types.ObjectId, ref: "Users" },
         Readed: { type: Boolean, default: false },
     })
 );
