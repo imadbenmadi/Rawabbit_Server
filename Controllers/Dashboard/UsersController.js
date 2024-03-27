@@ -305,6 +305,8 @@ const get_user = async (req, res) => {
             return res.status(409).json({ message: "User ID is required." });
         }
         const user = await Users.findById(id)
+            .populate("WebSites")
+            .populate("Requests");
         if (!user) {
             return res.status(404).json({ message: "User not found." });
         }
