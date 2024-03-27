@@ -1,4 +1,4 @@
-const { requests, Users } = require("../../models/Database");
+const { requests, Users, Websites } = require("../../models/Database");
 const Verify_Admin = require("../../Middleware/Verify_Admin");
 
 const handle_get_Requests = async (req, res) => {
@@ -58,7 +58,7 @@ const handle_Accept_request = async (req, res) => {
         // Add the Request to the user's list of Requests , adn Notify him
         await Users.findByIdAndUpdate(UserId, {
             $push: {
-                WebSites: RequestId,
+                Websites: RequestId,
                 Notifications: Notificatio_ToSend,
             },
         }).exec();

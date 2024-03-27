@@ -65,8 +65,7 @@ const handle_add_User = async (req, res) => {
             return res.status(409).json({
                 message: "Invalid Gender, accepted values: male or female",
             });
-        }
-        else if (Telephone.length < 9) {
+        } else if (Telephone.length < 9) {
             return res
                 .status(409)
                 .json({ message: "Telephone must be at least 9 characters" });
@@ -305,7 +304,7 @@ const get_user = async (req, res) => {
             return res.status(409).json({ message: "User ID is required." });
         }
         const user = await Users.findById(id)
-            .populate("WebSites")
+            .populate("Websites")
             .populate("Requests");
         if (!user) {
             return res.status(404).json({ message: "User not found." });
@@ -418,8 +417,7 @@ const get_user_service_requests = async (req, res) => {
         if (!id) {
             return res.status(409).json({ message: "User ID is required." });
         }
-        const user = await Users.findById(id)
-            ;
+        const user = await Users.findById(id);
         if (!user) {
             return res.status(404).json({ message: "User not found." });
         }

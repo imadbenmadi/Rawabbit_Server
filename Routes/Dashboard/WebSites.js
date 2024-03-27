@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const WebSitesController = require("../../Controllers/Dashboard/WebSitesController");
+const WebsitesController = require("../../Controllers/Dashboard/WebsitesController");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -10,7 +10,7 @@ const upload = multer({
         destination: function (req, file, cb) {
             const destinationPath = path.join(
                 __dirname,
-                "../../Public/WebSites"
+                "../../Public/Websites"
             );
             // Create the destination directory if it doesn't exist
             if (!fs.existsSync(destinationPath)) {
@@ -35,11 +35,11 @@ router.post(
         req.body.generatedFilename = req.generatedFilename;
         next();
     }
-    // WebSitesController.handle_add_WebSites
+    // WebsitesController.handle_add_Websites
 );
 router.delete(
     "/:id"
-    // WebSitesController.handle_delete_WebSites
+    // WebsitesController.handle_delete_Websites
 );
 router.put(
     "/:id",
@@ -47,8 +47,8 @@ router.put(
     (req, res, next) => {
         req.body.generatedFilename = req.generatedFilename;
         next();
-    },
-    // WebSitesController.handle_update_WebSites
+    }
+    // WebsitesController.handle_update_Websites
 );
 
 module.exports = router;

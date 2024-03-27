@@ -6,7 +6,7 @@ const { log } = require("console");
 const Delete_image = (generatedFilename) => {
     const imagePath = path.join(
         __dirname,
-        "../../Public/WebSites",
+        "../../Public/Websites",
         generatedFilename
     );
     try {
@@ -20,8 +20,8 @@ const handle_add_Courses = async (req, res) => {
     const isAuth = await Verify_Admin(req, res);
 
     if (isAuth.status == false) {
-         if (req.body.generatedFilename) {
-             Delete_image(req.body.generatedFilename);
+        if (req.body.generatedFilename) {
+            Delete_image(req.body.generatedFilename);
         }
         return res.status(401).json({ message: "Unauthorized: Invalid token" });
     }
@@ -34,7 +34,7 @@ const handle_add_Courses = async (req, res) => {
         });
     }
     try {
-        const { Title,Text, Description, Price, Category } = req.body;
+        const { Title, Text, Description, Price, Category } = req.body;
         if (!Title || !Text || !Description || !Price || !Category) {
             if (req.body.generatedFilename) {
                 Delete_image(req.body.generatedFilename);
@@ -144,8 +144,7 @@ const handle_update_Courses = async (req, res) => {
         });
     }
     try {
-        const { Title, Text, Description, Price, Category, date } =
-            req.body;
+        const { Title, Text, Description, Price, Category, date } = req.body;
         const { id } = req.params;
         if (!id) {
             if (req.body.generatedFilename) {

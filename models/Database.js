@@ -23,7 +23,7 @@ const Users = mongoose.model(
             },
         ],
         Date: { type: Date, default: Date.now },
-        WebSites: [{ type: mongoose.Types.ObjectId, ref: "Websites" }],
+        Websites: [{ type: mongoose.Types.ObjectId, ref: "Websites" }],
         Requests: [{ type: mongoose.Types.ObjectId, ref: "requests" }],
     })
 );

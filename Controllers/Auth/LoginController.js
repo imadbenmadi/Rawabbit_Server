@@ -76,7 +76,7 @@ const handleLogin = async (req, res) => {
                 FirstName: user.FirstName,
                 LastName: user.LastName,
                 Notifications: notificationsToSend,
-                // WebSites: user.WebSites,
+                // Websites: user.Websites,
                 // Requests: user.Requests,
                 Gender: user.Gender,
                 IsEmailVerified: user.IsEmailVerified,
