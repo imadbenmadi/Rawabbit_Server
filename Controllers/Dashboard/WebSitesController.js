@@ -1,8 +1,7 @@
-const { Courses, request_Course, Users } = require("../../models/Database");
+const { Websites, Users } = require("../../models/Database");
 const path = require("path");
 const fs = require("fs");
 const Verify_Admin = require("../../Middleware/Verify_Admin");
-const { log } = require("console");
 const Delete_image = (generatedFilename) => {
     const imagePath = path.join(
         __dirname,
@@ -16,7 +15,7 @@ const Delete_image = (generatedFilename) => {
         console.error("Error deleting image:", err);
     }
 };
-const handle_add_Courses = async (req, res) => {
+const handle_add_Websites = async (req, res) => {
     const isAuth = await Verify_Admin(req, res);
 
     if (isAuth.status == false) {
@@ -34,34 +33,28 @@ const handle_add_Courses = async (req, res) => {
         });
     }
     try {
-        const { Title, Text, Description, Price, Category } = req.body;
-        if (!Title || !Text || !Description || !Price || !Category) {
+        const { Title, Text, Description,  Category } = req.body;
+        if (!Title || !Text || !Description  || !Category) {
             if (req.body.generatedFilename) {
                 Delete_image(req.body.generatedFilename);
             }
             return res
                 .status(409)
                 .json({ message: "All fields are required." });
-        } else if (isNaN(Price)) {
-            if (req.body.generatedFilename) {
-                Delete_image(req.body.generatedFilename);
-            }
-            return res.status(409).json({ message: "Invalide Price" });
-        }
+        } 
         const creationDate = new Date();
         const generatedFilename = req.body.generatedFilename;
-        const newCourse = new Courses({
+        const newWebsite = new Websites({
             Title,
             Text,
             Description,
-            Price,
             Category,
             Date: creationDate,
             Image: generatedFilename,
         });
-        // Save the course to the database
-        await newCourse.save();
-        return res.status(200).json({ message: "Course added successfully." });
+        // Save the Website to the database
+        await newWebsite.save();
+        return res.status(200).json({ message: "Website added successfully." });
     } catch (error) {
         if (req.body.generatedFilename) {
             Delete_image(req.body.generatedFilename);
@@ -69,7 +62,7 @@ const handle_add_Courses = async (req, res) => {
         return res.status(500).json({ message: error });
     }
 };
-const handle_delete_Courses = async (req, res) => {
+const handle_delete_Websites = async (req, res) => {
     const isAuth = await Verify_Admin(req, res);
     if (isAuth.status == false)
         return res.status(401).json({ message: "Unauthorized: Invalid token" });
@@ -86,23 +79,23 @@ const handle_delete_Courses = async (req, res) => {
         if (!id) {
             return res
                 .status(409)
-                .json({ message: "CourseId field is required." });
+                .json({ message: "WebsiteId field is required." });
         }
 
-        // Find the course by id
-        const course = await Courses.findById(id);
+        // Find the Website by id
+        const Website = await Websites.findById(id);
 
-        // Check if the course exists
-        if (!course) {
-            return res.status(404).json({ message: "Course not found." });
+        // Check if the Website exists
+        if (!Website) {
+            return res.status(404).json({ message: "Website not found." });
         }
 
-        // Check if the course has an associated image
-        if (course.Image) {
+        // Check if the Website has an associated image
+        if (Website.Image) {
             const imagePath = path.join(
                 __dirname,
-                "../../Public/Courses",
-                course.Image
+                "../../Public/Websites",
+                Website.Image
             );
             fs.unlink(imagePath, (err) => {
                 if (err) {
@@ -113,20 +106,20 @@ const handle_delete_Courses = async (req, res) => {
             });
         }
 
-        // Delete the course from the database
-        await Courses.findByIdAndDelete(id);
+        // Delete the Website from the database
+        await Websites.findByIdAndDelete(id);
 
-        // Delete any related requests for this course
-        await request_Course.deleteMany({ Course: id });
+        // Delete any related requests for this Website
+        await request_Website.deleteMany({ Website: id });
 
         return res
             .status(200)
-            .json({ message: "Course deleted successfully." });
+            .json({ message: "Website deleted successfully." });
     } catch (error) {
         return res.status(500).json({ message: error });
     }
 };
-const handle_update_Courses = async (req, res) => {
+const handle_update_Websites = async (req, res) => {
     const isAuth = await Verify_Admin(req, res);
 
     if (isAuth.status == false) {
@@ -150,52 +143,52 @@ const handle_update_Courses = async (req, res) => {
             if (req.body.generatedFilename) {
                 Delete_image(req.body.generatedFilename);
             }
-            return res.status(409).json({ message: "Course ID Not Found." });
+            return res.status(409).json({ message: "Website ID Not Found." });
         }
-        const course = await Courses.findById(id);
-        if (!course) {
+        const Website = await Websites.findById(id);
+        if (!Website) {
             if (req.body.generatedFilename) {
                 Delete_image(req.body.generatedFilename);
             }
-            return res.status(404).json({ message: "Course not found." });
+            return res.status(404).json({ message: "Website not found." });
         }
         if (req.file) {
-            if (course.Image) {
+            if (Website.Image) {
                 const imagePath = path.join(
                     __dirname,
-                    "../../Public/Courses",
-                    course.Image
+                    "../../Public/Websites",
+                    Website.Image
                 );
                 fs.unlinkSync(imagePath);
                 console.log("Previous image deleted successfully");
             }
-            // Set the new image filename to the course
-            course.Image = req.body.generatedFilename;
+            // Set the new image filename to the Website
+            Website.Image = req.body.generatedFilename;
         }
         // Update each field if provided in the request body
         if (Title) {
-            course.Title = Title;
+            Website.Title = Title;
         }
         if (Text) {
-            course.Text = Text;
+            Website.Text = Text;
         }
         if (Description) {
-            course.Description = Description;
+            Website.Description = Description;
         }
         if (Price) {
-            course.Price = Price;
+            Website.Price = Price;
         }
         if (Category) {
-            course.Category = Category;
+            Website.Category = Category;
         }
         if (date) {
-            course.Date = date;
+            Website.Date = date;
         }
-        // Save the updated course
-        await course.save();
+        // Save the updated Website
+        await Website.save();
         return res
             .status(200)
-            .json({ message: "Course updated successfully." });
+            .json({ message: "Website updated successfully." });
     } catch (error) {
         if (req.body.generatedFilename) {
             Delete_image(req.body.generatedFilename);
@@ -203,7 +196,7 @@ const handle_update_Courses = async (req, res) => {
         return res.status(500).json({ message: error });
     }
 };
-const handle_get_Courses_Request = async (req, res) => {
+const handle_get_Websites_Request = async (req, res) => {
     const isAuth = await Verify_Admin(req, res);
     if (isAuth.status == false)
         return res.status(401).json({ message: "Unauthorized: Invalid token" });
@@ -216,19 +209,19 @@ const handle_get_Courses_Request = async (req, res) => {
         });
     }
     try {
-        const requests = await request_Course
+        const requests = await request_Website
             .find()
             .populate({
                 path: "User",
                 select: "FirstName LastName Email Telephone IsEmailVerified ", // Specify the fields you want to include
             })
-            .populate("Course");
+            .populate("Website");
         return res.status(200).json({ requests });
     } catch (error) {
         return res.status(500).json({ message: error });
     }
 };
-const handle_Accept_course_request = async (req, res) => {
+const handle_Accept_Website_request = async (req, res) => {
     const isAuth = await Verify_Admin(req, res);
 
     if (isAuth.status == false)
@@ -242,37 +235,37 @@ const handle_Accept_course_request = async (req, res) => {
         });
     }
     try {
-        const { UserId, CourseId } = req.body;
+        const { UserId, WebsiteId } = req.body;
 
-        if (!UserId || !CourseId) {
+        if (!UserId || !WebsiteId) {
             return res
                 .status(409)
                 .json({ message: "All fields are required." });
         }
 
         // Remove the request from the database
-        await request_Course.deleteMany({ User: UserId, Course: CourseId });
+        await request_Website.deleteMany({ User: UserId, Website: WebsiteId });
 
         const Notificatio_ToSend = {
-            Type: "course",
-            Title: "Course request accepted",
-            Text: "Your request for the course has been accepted",
+            Type: "Website",
+            Title: "Website request accepted",
+            Text: "Your request for the Website has been accepted",
             Date: new Date(),
         };
-        // Add the course to the user's list of courses , adn Notify him
+        // Add the Website to the user's list of Websites , adn Notify him
         await Users.findByIdAndUpdate(UserId, {
             $push: {
-                Courses: CourseId,
+                Websites: WebsiteId,
                 Notifications: Notificatio_ToSend,
             },
         }).exec();
 
-        return res.status(200).json({ message: "Course request accepted." });
+        return res.status(200).json({ message: "Website request accepted." });
     } catch (error) {
         return res.status(500).json({ message: error });
     }
 };
-const handle_Reject_course_request = async (req, res) => {
+const handle_Reject_Website_request = async (req, res) => {
     const isAuth = await Verify_Admin(req, res);
 
     if (isAuth.status == false)
@@ -286,20 +279,20 @@ const handle_Reject_course_request = async (req, res) => {
         });
     }
     try {
-        const { UserId, CourseId } = req.body;
+        const { UserId, WebsiteId } = req.body;
 
-        if (!UserId || !CourseId) {
+        if (!UserId || !WebsiteId) {
             return res
                 .status(409)
                 .json({ message: "All fields are required." });
         }
 
         // Remove the request from the database
-        await request_Course.deleteMany({ User: UserId, Course: CourseId });
+        await request_Website.deleteMany({ User: UserId, Website: WebsiteId });
         const Notificatio_ToSend = {
-            Type: "course",
-            Title: "Course request Rejected",
-            Text: "Your request for the course has been Rejected",
+            Type: "Website",
+            Title: "Website request Rejected",
+            Text: "Your request for the Website has been Rejected",
             Date: new Date(),
         };
 
@@ -308,16 +301,16 @@ const handle_Reject_course_request = async (req, res) => {
                 Notifications: Notificatio_ToSend,
             },
         }).exec();
-        return res.status(200).json({ message: "Course request rejected." });
+        return res.status(200).json({ message: "Website request rejected." });
     } catch (error) {
         return res.status(500).json({ message: error });
     }
 };
 module.exports = {
-    handle_add_Courses,
-    handle_Accept_course_request,
-    handle_Reject_course_request,
-    handle_delete_Courses,
-    handle_update_Courses,
-    handle_get_Courses_Request,
+    handle_add_Websites,
+    handle_Accept_Website_request,
+    handle_Reject_Website_request,
+    handle_delete_Websites,
+    handle_update_Websites,
+    handle_get_Websites_Request,
 };

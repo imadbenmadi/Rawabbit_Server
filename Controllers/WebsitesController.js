@@ -15,8 +15,8 @@ const get_All_Websites = async (req, res) => {
     }
 
     try {
-        const users = await Websites.find({}); // Exclude the Notifications field
-        return res.status(200).json(users);
+        const websites = await Websites.find({}); // Exclude the Notifications field
+        return res.status(200).json(websites);
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: error });

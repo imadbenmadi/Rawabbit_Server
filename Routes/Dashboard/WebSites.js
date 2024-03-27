@@ -34,8 +34,8 @@ router.post(
     (req, res, next) => {
         req.body.generatedFilename = req.generatedFilename;
         next();
-    }
-    // WebsitesController.handle_add_Websites
+    }, 
+    WebsitesController.handle_add_Websites
 );
 router.delete(
     "/:id"
